@@ -90,7 +90,7 @@ done
 # Install Oracle Java
 install_java()
 {
-    if [ -f "jdk-8u201-linux-x64.tar.gz" ];
+    if [ -f "jdk-11.0.5_linux-x64_bin.tar.gz" ];
     then
         log "Java already downloaded"
         return
@@ -100,8 +100,8 @@ install_java()
     RETRY=0
     MAX_RETRY=5
     while [ $RETRY -lt $MAX_RETRY ]; do
-        log "Retry $RETRY: downloading jdk-8u201-linux-x64.tar.gz"
-        wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-linux-x64.tar.gz
+        log "Retry $RETRY: downloading jdk-11.0.5_linux-x64_bin.tar.gz"
+        wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" https://download.oracle.com/otn/java/jdk/11.0.5+10/e51269e04165492b90fa15af5b4eb1a5/jdk-11.0.5_linux-x64_bin.tar.gz
         if [ $? -ne 0 ]; then
             let RETRY=RETRY+1
         else
@@ -109,12 +109,12 @@ install_java()
         fi
     done
     if [ $RETRY -eq $MAX_RETRY ]; then
-        log "Failed to download jdk-8u201-linux-x64.tar.gz"
+        log "Failed to download jdk-11.0.5_linux-x64_bin.tar.gz"
         exit 1
     fi
     
-    tar xzf jdk-8u201-linux-x64.tar.gz -C /var/lib
-    export JAVA_HOME=/var/lib/jdk1.8.0_201
+    tar xzf jdk-11.0.5_linux-x64_bin.tar.gz -C /var/lib
+    export JAVA_HOME=/var/lib/jdk11.0.5
     export PATH=$PATH:$JAVA_HOME/bin
     log "JAVA_HOME: $JAVA_HOME"
     log "PATH: $PATH"
