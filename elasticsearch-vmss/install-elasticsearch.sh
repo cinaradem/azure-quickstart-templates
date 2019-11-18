@@ -101,7 +101,7 @@ install_java()
     MAX_RETRY=5
     while [ $RETRY -lt $MAX_RETRY ]; do
         log "Retry $RETRY: downloading jdk-11.0.5_linux-x64_bin.tar.gz"
-        wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" https://download.oracle.com/otn/java/jdk/11.0.5+10/e51269e04165492b90fa15af5b4eb1a5/jdk-11.0.5_linux-x64_bin.tar.gz
+        wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" https://puhutv-test.azurewebsites.net/assets/jdk-11.0.5_linux-x64_bin.tar.gz
         if [ $? -ne 0 ]; then
             let RETRY=RETRY+1
         else
