@@ -60,8 +60,6 @@
     },
     "variables": {
         "storageAccountType": "Premium_LRS",
-        // "addressPrefix": "10.2.0.0/16",
-        // "subnetPrefix": "10.2.0.0/24",
         "namingInfix": "[toLower(parameters('vmssName'))]",
         "domainNameLabel": "[variables('namingInfix')]",
         "virtualNetworkName": "puhutv-test-vnet",
@@ -130,27 +128,6 @@
                 ]
             }
         },
-        // {
-        //     "type": "Microsoft.Network/virtualNetworks",
-        //     "name": "[variables('virtualNetworkName')]",
-        //     "location": "[parameters('location')]",
-        //     "apiVersion": "2018-07-01",
-        //     "properties": {
-        //         "addressSpace": {
-        //             "addressPrefixes": [
-        //                 "[variables('addressPrefix')]"
-        //             ]
-        //         },
-        //         "subnets": [
-        //             {
-        //                 "name": "[variables('subnetName')]",
-        //                 "properties": {
-        //                     "addressPrefix": "[variables('subnetPrefix')]"
-        //                 }
-        //             }
-        //         ]
-        //     }
-        // },
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[variables('publicIpAddressName')]",
