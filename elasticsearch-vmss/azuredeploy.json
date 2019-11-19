@@ -16,6 +16,24 @@
             },
             "maxLength": 61
         },
+        "existingVnetResourceGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the resourceGroup for the existing virtual network to deploy the scale set into."
+            }
+        },
+        "existingVnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "vName of the existing virtual network to deploy the scale set into."
+            }
+        },
+        "existingSubnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the existing subnet to deploy the scale set into."
+            }
+        },
         "instanceCount": {
             "type": "int",
             "metadata": {
@@ -62,7 +80,6 @@
         "storageAccountType": "Premium_LRS",
         "namingInfix": "[toLower(parameters('vmssName'))]",
         "domainNameLabel": "[variables('namingInfix')]",
-        "virtualNetworkName": "puhutv-test-vnet",
         "publicIpAddressName": "[concat(variables('namingInfix'), '-pip')]",
         "publicIpAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName'))]",
         "loadBalancerName": "[concat(variables('namingInfix'), '-lb')]",
@@ -77,7 +94,6 @@
         "loadBalancerPoolId": "[concat(variables('loadBalancerId'),'/backendAddressPools/', variables('backendPoolName'))]",
         "loadBalancerProbeId": "[concat(variables('loadBalancerId'),'/probes/tcpProbe')]",
         "sshProbeId": "[concat(variables('loadBalancerId'),'/probes/sshProbe')]",
-        "subnetName": "puhutv-test-vmss-subnet",
         "masterSize": "Standard_DS2_v2",
         "vmSku": "Standard_DS2_v2",
         "imageReference": {
@@ -128,6 +144,7 @@
                 ]
             }
         },
+
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[variables('publicIpAddressName')]",
@@ -258,9 +275,9 @@
                         "name": "ipconfigmaster",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[concat('10.2.0.1', copyindex())]",
+                            "privateIPAddress": "[concat('10.2.1.1', copyindex())]",
                             "subnet": {
-                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName')), '/subnets/', variables('subnetName'))]"
+                                "id": "[resourceId(parameters('existingVnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), parameters('existingSubNetName'))]"
                             },
                             "loadBalancerBackendAddressPools": [
                                 {
@@ -350,7 +367,7 @@
             "apiVersion": "2018-06-01",
             "dependsOn": [
                 "masterVmLoop",
-                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+                "[resourceId(parameters('existingVnetResourceGroupName'), 'Microsoft.Network/virtualNetworks', parameters('existingVnetName'))]"
             ],
             "sku": {
                 "name": "[variables('vmSku')]",
@@ -397,10 +414,12 @@
                                             "name": "[variables('ipConfigName')]",
                                             "properties": {
                                                 "subnet": {
-                                                    "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName')), '/subnets/', variables('subnetName'))]"
+                                                    "id": "[resourceId(parameters('existingVnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), parameters('existingSubNetName'))]"
                                                 }
                                             }
                                         }
+
+
                                     ]
                                 }
                             }
