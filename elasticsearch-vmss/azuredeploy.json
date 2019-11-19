@@ -60,11 +60,11 @@
     },
     "variables": {
         "storageAccountType": "Premium_LRS",
-        "addressPrefix": "10.0.0.0/16",
-        "subnetPrefix": "10.0.0.0/24",
+        // "addressPrefix": "10.2.0.0/16",
+        // "subnetPrefix": "10.2.0.0/24",
         "namingInfix": "[toLower(parameters('vmssName'))]",
         "domainNameLabel": "[variables('namingInfix')]",
-        "virtualNetworkName": "[concat(variables('namingInfix'), '-vnet')]",
+        "virtualNetworkName": "puhutv-test-vnet",
         "publicIpAddressName": "[concat(variables('namingInfix'), '-pip')]",
         "publicIpAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName'))]",
         "loadBalancerName": "[concat(variables('namingInfix'), '-lb')]",
@@ -79,7 +79,7 @@
         "loadBalancerPoolId": "[concat(variables('loadBalancerId'),'/backendAddressPools/', variables('backendPoolName'))]",
         "loadBalancerProbeId": "[concat(variables('loadBalancerId'),'/probes/tcpProbe')]",
         "sshProbeId": "[concat(variables('loadBalancerId'),'/probes/sshProbe')]",
-        "subnetName": "[concat(variables('namingInfix'), '-subnet')]",
+        "subnetName": "puhutv-test-vmss-subnet",
         "masterSize": "Standard_DS2_v2",
         "vmSku": "Standard_DS2_v2",
         "imageReference": {
@@ -130,27 +130,27 @@
                 ]
             }
         },
-        {
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[variables('virtualNetworkName')]",
-            "location": "[parameters('location')]",
-            "apiVersion": "2018-07-01",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[variables('addressPrefix')]"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "[variables('subnetName')]",
-                        "properties": {
-                            "addressPrefix": "[variables('subnetPrefix')]"
-                        }
-                    }
-                ]
-            }
-        },
+        // {
+        //     "type": "Microsoft.Network/virtualNetworks",
+        //     "name": "[variables('virtualNetworkName')]",
+        //     "location": "[parameters('location')]",
+        //     "apiVersion": "2018-07-01",
+        //     "properties": {
+        //         "addressSpace": {
+        //             "addressPrefixes": [
+        //                 "[variables('addressPrefix')]"
+        //             ]
+        //         },
+        //         "subnets": [
+        //             {
+        //                 "name": "[variables('subnetName')]",
+        //                 "properties": {
+        //                     "addressPrefix": "[variables('subnetPrefix')]"
+        //                 }
+        //             }
+        //         ]
+        //     }
+        // },
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[variables('publicIpAddressName')]",
@@ -281,7 +281,7 @@
                         "name": "ipconfigmaster",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[concat('10.0.0.1', copyindex())]",
+                            "privateIPAddress": "[concat('10.2.0.1', copyindex())]",
                             "subnet": {
                                 "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName')), '/subnets/', variables('subnetName'))]"
                             },
