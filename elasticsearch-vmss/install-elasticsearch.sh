@@ -90,58 +90,30 @@ done
 # Install Oracle Java
 install_java()
 {
-    if [ -f "jdk-8u201-linux-x64.tar.gz" ];
-    then
-        log "Java already downloaded"
-        return
-    fi
-    
-    log "Installing Java"
-    RETRY=0
-    MAX_RETRY=5
-    while [ $RETRY -lt $MAX_RETRY ]; do
-        log "Retry $RETRY: downloading jdk-8u201-linux-x64.tar.gz"
-        wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://puhutv-test.azurewebsites.net/assets/jdk-8u201-linux-x64.tar.gz
-        if [ $? -ne 0 ]; then
-            let RETRY=RETRY+1
-        else
-            break
-        fi
-    done
-    if [ $RETRY -eq $MAX_RETRY ]; then
-        log "Failed to download jdk-8u201-linux-x64.tar.gz"
-        exit 1
-    fi
-    
-    tar xzf jdk-8u201-linux-x64.tar.gz -C /var/lib
-    export JAVA_HOME=/var/lib/jdk1.8.0_201
-    export PATH=$PATH:$JAVA_HOME/bin
-    log "JAVA_HOME: $JAVA_HOME"
-    log "PATH: $PATH"
-    
+    sudo add-apt-repository -y  ppa:openjdk-r/ppa
+    sudo apt-get update
+    apt-get install -y openjdk-8-jre
     java -version
     if [ $? -ne 0 ]; then
         log "Java installation failed"
         exit 1
     fi
 }
-
 install_es()
 {
-    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-    apt-get install apt-transport-https
-    echo "deb https://artifacts.elastic.co/packages/1.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-1.x.list    
-    apt-get update -y 
-    apt-get install -y elasticsearch
+    curl -L -O https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.6.deb
+    dpkg -i elasticsearch-1.7.6.deb
+    # apt-get install -y elasticsearch
     pushd /usr/share/elasticsearch/
-    bin/elasticsearch-plugin install x-pack --batch
+    # bin/elasticsearch-plugin install x-pack --batch
     popd
     
     if [ ${IS_DATA_NODE} -eq 0 ]; 
     then
-        apt-get install -y kibana
+        curl -L -O https://artifacts.elastic.co/downloads/kibana/kibana-6.3.2-amd64.deb
+        dpkg -i kibana-6.3.2-amd64.deb
         pushd /usr/share/kibana/
-        bin/kibana-plugin install x-pack
+        # bin/kibana-plugin install x-pack
         popd
     fi
 }
@@ -165,10 +137,15 @@ configure_es()
         echo "node.master: true" >> /etc/elasticsearch/elasticsearch.yml
         echo "node.data: false" >> /etc/elasticsearch/elasticsearch.yml
 	fi
+	log "Finish Update configuration"
+
 }
 
 configure_system()
 {
+    apt install resolvconf
+    # mkdir /etc/resolvconf
+    # mkdir /etc/resolvconf/resolv.conf.d
 	echo "options timeout:1 attempts:5" >> /etc/resolvconf/resolv.conf.d/head
 	resolvconf -u
 	ES_HEAP=`free -m |grep Mem | awk '{if ($2/2 >31744)  print 31744;else printf "%.0f", $2/2;}'`
@@ -222,6 +199,7 @@ start_service()
     systemctl daemon-reload
     systemctl enable elasticsearch.service
     systemctl start elasticsearch.service
+    # systemctl status elasticsearch.service
     sleep 60
     
     if [ `systemctl is-failed elasticsearch.service` == 'failed' ];
@@ -233,8 +211,8 @@ start_service()
     if [ ${IS_DATA_NODE} -eq 0 ]; 
     then
         log "Starting Kibana on ${HOSTNAME}"
-        systemctl enable kibana.service
-        systemctl start kibana.service
+        # systemctl enable kibana.service
+        # systemctl start kibana.service
         sleep 10
     
         if [ `systemctl is-failed kibana.service` == 'failed' ];
